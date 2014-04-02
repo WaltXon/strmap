@@ -3,7 +3,7 @@ test = ['NE4', 'SE4', 'NENE', 'S2S2', 'S2',
 	'N2S2+W2NW4', 'ALL','SW4NE4','S2NW4+SW4','E2', 'W2W2']
 
 
-def parsePart(part):
+def ParseLegalPart(part):
 	if part == 'ALL':
 		print 'Unmodified Section'
 		return(["ALL"])
@@ -30,7 +30,7 @@ def parsePart(part):
 	return parts
 
 
-def parseSTR(legal):
+def ParseLegal(legal):
 	quarters = ['NE', 'SE', 'NW', 'SW']
 	halves = ['N', 'S', 'E', 'W']
 	numeric = ['2','4']
@@ -48,7 +48,7 @@ def parseSTR(legal):
 	legallist = []
 	for part in partlist:
 		print("--part = {0}".format(part))
-		legallist.append(parsePart(part))
+		legallist.append(ParseLegalPart(part))
 
 	return legallist
 
@@ -56,4 +56,4 @@ for legal in test:
 	print("""
 	      =================
 	      """)
-	print("ParsedSTR = {0}".format(parseSTR(legal)))
+	print("ParsedSTR = {0}".format(ParseLegal(legal)))

@@ -27,9 +27,6 @@ arcpy.env.workspace = r"K:\COLORADO\LWN\WeldCoLeases.gdb"
 
 in_plss = arcpy.GetParameterAsText(0) or r"IHS_CO_Section_proj"
 
-def UnpackGeoObj(geoObj):
-    pass
-
 def GetPlssSectionPoints(plss, meridian, sec, twp, twpdir, rng, rngdir):
     expression = """{0} = {1} AND {2} = {3} AND {4} = {5} AND {6} LIKE '{7}' AND {8} = {9} AND {10} LIKE '{11}'""".format(
         arcpy.AddFieldDelimiters(plss,"MER"), meridian,
@@ -59,21 +56,19 @@ def MaxMinPoints(coords):
     return mm
 
 ##|(minx, maxy)----(maxx, maxy)|
-##|                            |
-##|                            |
-##|(minx, miny)----(maxx, miny)|
+##|                                               |
+##|                                               |
+##|(minx, miny)----(maxx, miny) |
 
 def Angle(x1,y1,x2,y2):
     dx = x2 - x1
     dy = y2 - y1
     a = math.atan2(dy,dx)
-    # print a
     return a
 
 def Distance(x1,y1,x2,y2):
     a = (x2-x1)**2
     b = (y2-y1)**2
-    print math.sqrt(a+b) * .5
     return math.sqrt(a+b)
 
 def NewPoint(x,y,angle, dist):

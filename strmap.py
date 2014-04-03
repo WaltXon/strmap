@@ -47,7 +47,7 @@ def ParseJsonGeom(json):
     for vals in json['rings']:
         return vals
 
-def GetMaxMinPoints(coords):
+def MaxMinPoints(coords):
     mm = {"maxx": float("-inf"), "maxy": float("-inf"), "minx": float("inf"), "miny": float("inf")}
     for pnt in coords:
         # print("pnt = {0}".format(pnt))
@@ -62,51 +62,29 @@ def GetMaxMinPoints(coords):
 ##|                            |
 ##|(minx, miny)----(maxx, miny)|
 
-def uphzazi(shp):
-    deltax = shp['minx'] - shp['maxx']
-    deltay = shp['maxy'] - shp['maxy'] 
-    angleInDegrees = math.atan2(deltay, deltax) * 180.0 / math.pi
-    return angleInDegrees
+def Angle(x1,y1,x2,y2):
+    dx = x2 - x1
+    dy = y2 - y1
+    a = math.atan2(dy,dx) * 180.0 / math.pi
 
-def lowhzazi(shp):
-    deltax = shp['minx'] - shp['maxx']
-    deltay = shp['miny'] - shp['miny'] 
-    angleInDegrees = math.atan2(deltay, deltax) * 180.0 / math.pi
-    return angleInDegrees
-
-def leftvertazi(shp):
-    deltax = shp['minx'] - shp['minx']
-    deltay = shp['maxy'] - shp['miny'] 
-    angleInDegrees = math.atan2(deltay, deltax) * 180.0 / math.pi
-    return angleInDegrees
-
-def rightvertazi(shp):
-    deltax = shp['maxx'] - shp['maxx']
-    deltay = shp['miny'] - shp['maxy'] 
-    angleInDegrees = math.atan2(deltay, deltax) * 180.0 / math.pi
-    return angleInDegrees
-
-def distance(x1,y1,x2,y2):
+def Distance(x1,y1,x2,y2):
     a = (x2-x1)**2
     b = (y2-y1)**2
     return math.sqrt(a+b)
 
-def GetNewPoint(x,y,angle, dist):
+def NewPoint(x,y,angle, dist):
     cos = math.cos(angle)
     sin = math.sin(angle)
-    xn = x + cos
-    yn = y + sin
+    xn = x + cos * dist
+    yn = y + sin * dist
     return (xn,yn)
 
 def SouthHalf(shp):
-    #get upperhzazi, lowerhzazi, leftvertazi, rightvertazi in degrees
-    #start at (minx, miny) 
-    newshp = {'maxx': 0, 'maxy':0, 'minx':0, 'miny':0}
-    newshp['minx'] = shp['minx']
-    newshp['miny'] = shp['miny']
-    newshp['maxx'] = shp['maxx']
-    newshp['maxy'] = GetNewPoint(newshp['minx'], newshp['miny'], leftvertazi(shp), distance(shp['minx'],shp['miny'],shp['minx'],shp['maxy'])*.5)[1]
-    return newshp
+    ll = (shp['minx'], shp['miny'])
+    ul = NewPoint(ll[0], ll[1], Angle(ll[0], ll[1],shp['minx'], shp['maxy']),  Distance(shp['minx'],shp['miny'],shp['minx'],shp['maxy'])*0.5)
+    lr =  (shp['maxx'],shp['miny'])
+    ur = NewPoint(lr[0], lr[1], Angle(lr[0], lr[1],shp['maxx'], shp['maxy']),  Distance(shp['maxx'],shp['miny'],shp['maxx'],shp['maxy'])*0.5)
+    return([ll, ul, ur, lr, ll])
 
 def NorthHalf():
     pass
@@ -136,6 +114,6 @@ if TEST == True:
     print("jsongeom = {0}".format(jsongeom))
     parsedjson= ParseJsonGeom(jsongeom)
     print("parsedjson = {0}".format(parsedjson))
-    maxmin = GetMaxMinPoints(parsedjson)
+    maxmin = MaxMinPoints(parsedjson)
     print("maxmin = {0}".format(maxmin))
     print("SouthHalf = {0}".format(SouthHalf(maxmin)))

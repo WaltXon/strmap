@@ -57,8 +57,56 @@ def GetMaxMinPoints(coords):
         mm["maxy"] = pnt[1] if pnt[1] > mm["maxy"] else mm["maxy"]
     return mm
 
-def SouthHalf():
-    pass
+##|(minx, maxy)----(maxx, maxy)|
+##|                            |
+##|                            |
+##|(minx, miny)----(maxx, miny)|
+
+def uphzazi(shp):
+    deltax = shp['minx'] - shp['maxx']
+    deltay = shp['maxy'] - shp['maxy'] 
+    angleInDegrees = math.atan2(deltay, deltax) * 180.0 / math.pi
+    return angleInDegrees
+
+def lowhzazi(shp):
+    deltax = shp['minx'] - shp['maxx']
+    deltay = shp['miny'] - shp['miny'] 
+    angleInDegrees = math.atan2(deltay, deltax) * 180.0 / math.pi
+    return angleInDegrees
+
+def leftvertazi(shp):
+    deltax = shp['minx'] - shp['minx']
+    deltay = shp['maxy'] - shp['miny'] 
+    angleInDegrees = math.atan2(deltay, deltax) * 180.0 / math.pi
+    return angleInDegrees
+
+def rightvertazi(shp):
+    deltax = shp['maxx'] - shp['maxx']
+    deltay = shp['miny'] - shp['maxy'] 
+    angleInDegrees = math.atan2(deltay, deltax) * 180.0 / math.pi
+    return angleInDegrees
+
+def distance(x1,y1,x2,y2):
+    a = (x2-x1)**2
+    b = (y2-y1)**2
+    return math.sqrt(a+b)
+
+def GetNewPoint(x,y,angle, dist):
+    cos = math.cos(angle)
+    sin = math.sin(angle)
+    xn = x + cos
+    yn = y + sin
+    return (xn,yn)
+
+def SouthHalf(shp):
+    #get upperhzazi, lowerhzazi, leftvertazi, rightvertazi in degrees
+    #start at (minx, miny) 
+    newshp = {'maxx': 0, 'maxy':0, 'minx':0, 'miny':0}
+    newshp['minx'] = shp['minx']
+    newshp['miny'] = shp['miny']
+    newshp['maxx'] = shp['maxx']
+    newshp['maxy'] = GetNewPoint(newshp['minx'], newshp['miny'], leftvertazi(shp), distance(shp['minx'],shp['miny'],shp['minx'],shp['maxy'])*.5)[1]
+    return newshp
 
 def NorthHalf():
     pass
@@ -83,9 +131,11 @@ def SWQuarter():
 
 #TEST
 if TEST == True:
-    #secpoints = GetPlssSectionPoints(in_plss, 6, 12, 2, 'N', 102, 'W')
+    #jsongeom = GetPlssSectionPoints(in_plss, 6, 12, 2, 'N', 102, 'W')
     jsongeom = dict({u'rings': [[[2082748.664897889, 1314559.3098360598], [2077510.7967647165, 1314775.8576313108], [2077710.6139503866, 1320030.2677261382], [2082961.046034798, 1319835.479073733], [2082748.664897889, 1314559.3098360598]]], u'spatialReference': {u'wkid': 102653}})
-    print("secpoints = {0}".format(jsongeom))
-    parsedjson= ParseJsonGeom(secpoints)
-    print("parsedlegal = {0}".format(parsedjson))
-    print GetMaxMinPoints(parsedjson)
+    print("jsongeom = {0}".format(jsongeom))
+    parsedjson= ParseJsonGeom(jsongeom)
+    print("parsedjson = {0}".format(parsedjson))
+    maxmin = GetMaxMinPoints(parsedjson)
+    print("maxmin = {0}".format(maxmin))
+    print("SouthHalf = {0}".format(SouthHalf(maxmin)))

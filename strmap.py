@@ -17,6 +17,7 @@ import os
 import sys
 import math
 import json
+import cProfile
 
 TEST = True
 
@@ -65,16 +66,19 @@ def MaxMinPoints(coords):
 def Angle(x1,y1,x2,y2):
     dx = x2 - x1
     dy = y2 - y1
-    a = math.atan2(dy,dx) * 180.0 / math.pi
+    a = math.atan2(dy,dx)
+    # print a
+    return a
 
 def Distance(x1,y1,x2,y2):
     a = (x2-x1)**2
     b = (y2-y1)**2
+    print math.sqrt(a+b) * .5
     return math.sqrt(a+b)
 
 def NewPoint(x,y,angle, dist):
-    cos = math.cos(angle)
-    sin = math.sin(angle)
+    cos = math.cos((angle))
+    sin = math.sin((angle))
     xn = x + cos * dist
     yn = y + sin * dist
     return (xn,yn)
@@ -108,7 +112,7 @@ def SWQuarter():
     pass
 
 #TEST
-if TEST == True:
+def test():
     #jsongeom = GetPlssSectionPoints(in_plss, 6, 12, 2, 'N', 102, 'W')
     jsongeom = dict({u'rings': [[[2082748.664897889, 1314559.3098360598], [2077510.7967647165, 1314775.8576313108], [2077710.6139503866, 1320030.2677261382], [2082961.046034798, 1319835.479073733], [2082748.664897889, 1314559.3098360598]]], u'spatialReference': {u'wkid': 102653}})
     print("jsongeom = {0}".format(jsongeom))
@@ -117,3 +121,8 @@ if TEST == True:
     maxmin = MaxMinPoints(parsedjson)
     print("maxmin = {0}".format(maxmin))
     print("SouthHalf = {0}".format(SouthHalf(maxmin)))
+
+if TEST == True:
+    cProfile.run('test()')
+
+

@@ -1,11 +1,9 @@
 import strmap as sm
 import strparse as sp
+import strimport as im
+import strwritegeom as wr
 
 
-rawdata = ''
-guiddata = ''
-grid = ''
-out_fc = ''
 
 
 testlegal = ['NE4', 'SE4', 'NENE', 'S2S2', 'S2',
@@ -20,11 +18,30 @@ jsongeom = dict({u'rings': [[[2082748.664897889, 1314559.3098360598], [2077510.7
 ###3a) pull  nad parse section geometry
 ###3b)
 
+def main():
+    rawdata = ''
+    guiddata = ''
+    grid = ''
+    out_fc = ''
 
-for description in testlegal:
-    lgl = sp.ParseLegal(description)
-    for item in lgl:
-        for call in item.reverse():
-            if call == 'S':
-                shape = sm.SouthHalf(shape)
+    data = im.ImportDIData(rawdata, guiddata)
+    filtereddata = sp.LegalDesc(data)
+
+    for lgl in filtereddata:
+        section = sp. GetPlssSectionPoints(grid, '6', sec = lgl[1], twp = lgl[2], twpdir = lgl[3], rng = lgl[4], rngdir= lgl[5])
+        for lglpart in lgl[?]:
+            for lglsubpart in lglpart.reverse():
+                if lglsubpart == 'ALL':
+                    shape = section
+                elif lglsubpart == 'S':
+                    shape = sm.SouthHalf(section)
+                elif lglsubpart == 'E'
+
+
+
+
+
+
+main()
+
 

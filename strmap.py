@@ -52,7 +52,7 @@ def MaxMinPoints(coords):
         mm["miny"] = pnt[1] if pnt[1] < mm["miny"] else mm["miny"]
         mm["maxx"] = pnt[0] if pnt[0] > mm["maxx"] else mm["maxx"]
         mm["maxy"] = pnt[1] if pnt[1] > mm["maxy"] else mm["maxy"]
-    shp = [(mm['minx'],mm['miny']),(mm['minx'],mm['maxy']),(mm['maxx'],mm['maxy']),(mm['maxx'],mm['miny'])]    
+    shp = [(mm['minx'],mm['miny']),(mm['minx'],mm['maxy']),(mm['maxx'],mm['maxy']),(mm['maxx'],mm['miny'])]
     return shp
 
 ##|(minx, maxy)----(maxx, maxy)|
@@ -113,27 +113,27 @@ def WestHalf(shp):
 def NEQuarter(shp):
     ul = NewPoint(shp[2][0], shp[2][1], Angle(shp[2][0], shp[2][1],shp[1][0], shp[1][1]), Distance(shp[2][0],shp[2][1],shp[1][0],shp[1][1])*0.5)
     lr = NewPoint(shp[2][0], shp[2][1], Angle(shp[2][0], shp[2][1],shp[3][0], shp[3][1]), Distance(shp[2][0],shp[2][1],shp[3][0],shp[3][1])*0.5)
-    ur = shp[2] 
+    ur = shp[2]
     ll = NewPoint(ul[0], ul[1], Angle(shp[2][0], shp[2][1],shp[3][0], shp[3][1]), Distance(shp[2][0],shp[2][1],shp[3][0],shp[3][1])*0.5)
     return([ll, ul, ur, lr, ll])
 
 def NWQuarter(shp):
     ul = shp[1]
-    ur = NewPoint(shp[1][0], shp[1][1], Angle(shp[1][0], shp[1][1],shp[2][0], shp[2][1]), Distance(shp[1][0],shp[1][1],shp[2][0],shp[2][1])*0.5) 
+    ur = NewPoint(shp[1][0], shp[1][1], Angle(shp[1][0], shp[1][1],shp[2][0], shp[2][1]), Distance(shp[1][0],shp[1][1],shp[2][0],shp[2][1])*0.5)
     ll = NewPoint(shp[1][0], shp[1][1], Angle(shp[1][0], shp[1][1],shp[0][0], shp[0][1]),  Distance(shp[1][0],shp[1][1],shp[0][0],shp[0][1])*0.5)
     lr = NewPoint(ur[0], ur[1], Angle(shp[1][0], shp[1][1],shp[0][0], shp[0][1]), Distance(shp[1][0],shp[1][1],shp[0][0],shp[0][1])*0.5)
     return([ll, ul, ur, lr, ll])
 
 def SEQuarter(shp):
     lr = shp[3]
-    ur = NewPoint(shp[3][0], shp[3][1], Angle(shp[3][0], shp[3][1],shp[2][0], shp[2][1]), Distance(shp[3][0],shp[3][1],shp[2][0],shp[2][1])*0.5) 
+    ur = NewPoint(shp[3][0], shp[3][1], Angle(shp[3][0], shp[3][1],shp[2][0], shp[2][1]), Distance(shp[3][0],shp[3][1],shp[2][0],shp[2][1])*0.5)
     ll = NewPoint(shp[3][0], shp[3][1], Angle(shp[3][0], shp[3][1],shp[0][0], shp[0][1]),  Distance(shp[3][0],shp[3][1],shp[0][0],shp[0][1])*0.5)
     ul = NewPoint(ll[0], ll[1], Angle(shp[3][0], shp[3][1],shp[2][0], shp[2][1]),  Distance(shp[3][0],shp[3][1],shp[2][0],shp[2][1])*0.5)
     return([ll, ul, ur, lr, ll])
 
 def SWQuarter(shp):
     ll = shp[0]
-    ul = NewPoint(shp[0][0], shp[0][1], Angle(shp[0][0], shp[0][1],shp[1][0], shp[1][1]), Distance(shp[0][0],shp[0][1],shp[1][0],shp[1][1])*0.5) 
+    ul = NewPoint(shp[0][0], shp[0][1], Angle(shp[0][0], shp[0][1],shp[1][0], shp[1][1]), Distance(shp[0][0],shp[0][1],shp[1][0],shp[1][1])*0.5)
     lr = NewPoint(shp[0][0], shp[0][1], Angle(shp[0][0], shp[0][1],shp[3][0], shp[3][1]),  Distance(shp[0][0],shp[0][1],shp[3][0],shp[3][1])*0.5)
     ur = NewPoint(lr[0], lr[1], Angle(shp[0][0], shp[0][1],shp[1][0], shp[1][1]),  Distance(shp[0][0],shp[0][1],shp[1][0],shp[1][1])*0.5)
     return([ll, ul, ur, lr, ll])

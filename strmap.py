@@ -40,7 +40,6 @@ def GetPlssSectionPoints(plss, meridian, sec, twp, twpdir, rng, rngdir):
     #print shape
     return json.loads(shape[0])
 
-
 def ParseJsonGeom(json):
     for vals in json['rings']:
         return vals
@@ -53,12 +52,17 @@ def MaxMinPoints(coords):
         mm["miny"] = pnt[1] if pnt[1] < mm["miny"] else mm["miny"]
         mm["maxx"] = pnt[0] if pnt[0] > mm["maxx"] else mm["maxx"]
         mm["maxy"] = pnt[1] if pnt[1] > mm["maxy"] else mm["maxy"]
-    return mm
+    shp = [(mm['minx'],mm['miny']),(mm['minx'],mm['maxy']),(mm['maxx'],mm['maxy']),(mm['maxx'],mm['miny'])]    
+    return shp
 
 ##|(minx, maxy)----(maxx, maxy)|
 ##|                                               |
 ##|                                               |
 ##|(minx, miny)----(maxx, miny) |
+## lower left corner = ll = shp[0]
+## upper left corner = ul = shp[1]
+## upper right corner = ur = shp[2]
+## lower right corner = lr = shp[3]
 
 def Angle(x1,y1,x2,y2):
     dx = x2 - x1
@@ -79,32 +83,60 @@ def NewPoint(x,y,angle, dist):
     return (xn,yn)
 
 def SouthHalf(shp):
-    ll = (shp['minx'], shp['miny'])
-    ul = NewPoint(ll[0], ll[1], Angle(ll[0], ll[1],shp['minx'], shp['maxy']),  Distance(shp['minx'],shp['miny'],shp['minx'],shp['maxy'])*0.5)
-    lr =  (shp['maxx'],shp['miny'])
-    ur = NewPoint(lr[0], lr[1], Angle(lr[0], lr[1],shp['maxx'], shp['maxy']),  Distance(shp['maxx'],shp['miny'],shp['maxx'],shp['maxy'])*0.5)
+    ll = shp[0]
+    ul = NewPoint(shp[0][0], shp[0][1], Angle(shp[0][0], shp[0][1],shp[1][0], shp[1][1]),  Distance(shp[0][0],shp[0][1],shp[1][0],shp[1][1])*0.5)
+    lr =  shp[3]
+    ur = NewPoint(shp[3][0], shp[3][1], Angle(shp[3][0], shp[3][1],shp[2][0], shp[2][1]),  Distance(shp[3][0],shp[3][1],shp[2][0],shp[2][1])*0.5)
     return([ll, ul, ur, lr, ll])
 
-def NorthHalf():
-    pass
+def NorthHalf(shp):
+    ll = NewPoint(shp[1][0], shp[1][1], Angle(shp[1][0], shp[1][1],shp[0][0], shp[0][1]),  Distance(shp[1][0],shp[1][1],shp[0][0],shp[0][1])*0.5)
+    ul = shp[1]
+    lr =  NewPoint(shp[2][0], shp[2][1], Angle(shp[2][0], shp[2][1],shp[3][0], shp[3][1]),  Distance(shp[2][0],shp[2][1],shp[3][0],shp[3][1])*0.5)
+    ur = shp[2]
+    return([ll, ul, ur, lr, ll])
 
-def EastHalf():
-    pass
+def EastHalf(shp):
+    ll = NewPoint(shp[3][0], shp[3][1], Angle(shp[3][0], shp[3][1],shp[0][0], shp[0][1]),  Distance(shp[3][0],shp[3][1],shp[0][0],shp[0][1])*0.5)
+    ul = NewPoint(shp[2][0], shp[2][1], Angle(shp[2][0], shp[2][1],shp[1][0], shp[1][1]),  Distance(shp[2][0],shp[2][1],shp[1][0],shp[1][1])*0.5)
+    lr =  shp[3]
+    ur = shp[2]
+    return([ll, ul, ur, lr, ll])
 
-def WestHalf():
-    pass
+def WestHalf(shp):
+    ll = shp[0]
+    ul = shp[1]
+    lr = NewPoint(shp[0][0], shp[0][1], Angle(shp[0][0], shp[0][1],shp[3][0], shp[3][1]),  Distance(shp[0][0],shp[0][1],shp[3][0],shp[3][1])*0.5)
+    ur = NewPoint(shp[1][0], shp[1][1], Angle(shp[1][0], shp[1][1],shp[2][0], shp[2][1]),  Distance(shp[1][0],shp[1][1],shp[2][0],shp[2][1])*0.5)
+    return([ll, ul, ur, lr, ll])
 
-def NEQuarter():
-    pass
+def NEQuarter(shp):
+    ul = NewPoint(shp[2][0], shp[2][1], Angle(shp[2][0], shp[2][1],shp[1][0], shp[1][1]), Distance(shp[2][0],shp[2][1],shp[1][0],shp[1][1])*0.5)
+    lr = NewPoint(shp[2][0], shp[2][1], Angle(shp[2][0], shp[2][1],shp[3][0], shp[3][1]), Distance(shp[2][0],shp[2][1],shp[3][0],shp[3][1])*0.5)
+    ur = shp[2] 
+    ll = NewPoint(ul[0], ul[1], Angle(shp[2][0], shp[2][1],shp[3][0], shp[3][1]), Distance(shp[2][0],shp[2][1],shp[3][0],shp[3][1])*0.5)
+    return([ll, ul, ur, lr, ll])
 
-def NWQuarter():
-    pass
+def NWQuarter(shp):
+    ul = shp[1]
+    ur = NewPoint(shp[1][0], shp[1][1], Angle(shp[1][0], shp[1][1],shp[2][0], shp[2][1]), Distance(shp[1][0],shp[1][1],shp[2][0],shp[2][1])*0.5) 
+    ll = NewPoint(shp[1][0], shp[1][1], Angle(shp[1][0], shp[1][1],shp[0][0], shp[0][1]),  Distance(shp[1][0],shp[1][1],shp[0][0],shp[0][1])*0.5)
+    lr = NewPoint(ur[0], ur[1], Angle(shp[1][0], shp[1][1],shp[0][0], shp[0][1]), Distance(shp[1][0],shp[1][1],shp[0][0],shp[0][1])*0.5)
+    return([ll, ul, ur, lr, ll])
 
-def SEQuarter():
-    pass
+def SEQuarter(shp):
+    lr = shp[3]
+    ur = NewPoint(shp[3][0], shp[3][1], Angle(shp[3][0], shp[3][1],shp[2][0], shp[2][1]), Distance(shp[3][0],shp[3][1],shp[2][0],shp[2][1])*0.5) 
+    ll = NewPoint(shp[3][0], shp[3][1], Angle(shp[3][0], shp[3][1],shp[0][0], shp[0][1]),  Distance(shp[3][0],shp[3][1],shp[0][0],shp[0][1])*0.5)
+    ul = NewPoint(ll[0], ll[1], Angle(shp[3][0], shp[3][1],shp[2][0], shp[2][1]),  Distance(shp[3][0],shp[3][1],shp[2][0],shp[2][1])*0.5)
+    return([ll, ul, ur, lr, ll])
 
-def SWQuarter():
-    pass
+def SWQuarter(shp):
+    ll = shp[0]
+    ul = NewPoint(shp[0][0], shp[0][1], Angle(shp[0][0], shp[0][1],shp[1][0], shp[1][1]), Distance(shp[0][0],shp[0][1],shp[1][0],shp[1][1])*0.5) 
+    lr = NewPoint(shp[0][0], shp[0][1], Angle(shp[0][0], shp[0][1],shp[3][0], shp[3][1]),  Distance(shp[0][0],shp[0][1],shp[3][0],shp[3][1])*0.5)
+    ur = NewPoint(lr[0], lr[1], Angle(shp[0][0], shp[0][1],shp[1][0], shp[1][1]),  Distance(shp[0][0],shp[0][1],shp[1][0],shp[1][1])*0.5)
+    return([ll, ul, ur, lr, ll])
 
 #TEST
 def test():
@@ -116,6 +148,13 @@ def test():
     maxmin = MaxMinPoints(parsedjson)
     print("maxmin = {0}".format(maxmin))
     print("SouthHalf = {0}".format(SouthHalf(maxmin)))
+    print("NorthHalf = {0}".format(NorthHalf(maxmin)))
+    print("EastHalf = {0}".format(EastHalf(maxmin)))
+    print("WestHalf = {0}".format(WestHalf(maxmin)))
+    print("SWQuarter = {0}".format(SWQuarter(maxmin)))
+    print("SEQuarter = {0}".format(SEQuarter(maxmin)))
+    print("NWQuarter = {0}".format(NWQuarter(maxmin)))
+    print("NEQuarter = {0}".format(NEQuarter(maxmin)))
 
 if TEST == True:
     cProfile.run('test()')

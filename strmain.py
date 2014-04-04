@@ -1,6 +1,13 @@
 import strmap as sm
 import strparse as sp
 
+
+rawdata = ''
+guiddata = ''
+grid = ''
+out_fc = ''
+
+
 testlegal = ['NE4', 'SE4', 'NENE', 'S2S2', 'S2',
     'N2S2+W2NW4', 'ALL','SW4NE4','S2NW4+SW4','E2', 'W2W2']
 
